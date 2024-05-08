@@ -1,0 +1,81 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      c;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+dimensions      [0 0 0 0 0 0 0];
+
+internalField   #codeStream
+{
+    codeInclude
+#{
+        #include "fvCFD.H"
+#};
+    codeOptions
+#{
+        -I$(LIB_SRC)/finiteVolume/lnInclude \
+        -I$(LIB_SRC)/meshTools/lnInclude
+#};
+    codeLibs
+#{
+        -lmeshTools \
+        -lfiniteVolume
+#};
+    code
+#{
+        const IOdictionary& d = static_cast<const IOdictionary&>(dict);
+        const fvMesh& mesh = refCast<const fvMesh>(d.db());
+
+        scalarField c(mesh.nCells(),0.);
+        const scalar c_0=0.5;
+        const scalar epsilon=0.01;
+
+        forAll(c,i)
+        {
+
+            scalar x = mesh.C()[i][0];
+            scalar y = mesh.C()[i][1];
+    
+            c[i] = c_0 + epsilon * (
+                cos(0.105 * x) * cos(0.11 * y) +
+                pow(cos(0.13 * x) * cos(0.087 * y), 2) +
+                cos(0.025 * x - 0.15 * y) * cos(0.07 * x - 0.02 * y));
+        }
+        writeEntry(os, "", c);
+#};
+};
+
+
+boundaryField
+{
+    bottom
+    {
+        type            zeroGradient;
+    }
+    top
+    {
+        type            zeroGradient;
+    }
+    left
+    {
+        type            zeroGradient; 
+    }
+    right
+    {
+        type            zeroGradient; 
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+// ************************************************************************* //

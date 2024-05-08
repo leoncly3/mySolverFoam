@@ -1,0 +1,98 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      u;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+dimensions      [0 0 0 0 0 0 0];
+
+internalField   #codeStream
+{
+    codeInclude
+#{
+        #include "fvCFD.H"
+#};
+    codeOptions
+#{
+        -I$(LIB_SRC)/finiteVolume/lnInclude \
+        -I$(LIB_SRC)/meshTools/lnInclude
+#};
+    codeLibs
+#{
+        -lmeshTools \
+        -lfiniteVolume
+#};
+    code
+#{
+        const IOdictionary& d = static_cast<const IOdictionary&>(dict);
+        const fvMesh& mesh = refCast<const fvMesh>(d.db());
+
+        scalarField u(mesh.nCells(),0.);
+        const scalar c_0=0.5;
+        const scalar epsilon=0.01;
+        const scalar Q_s=2;
+        const scalar c_alpha=0.3;
+        const scalar c_beta=0.7;
+        const scalar kappa=2;
+
+        forAll(u,i)
+        {
+
+            scalar x = mesh.C()[i][0];
+            scalar y = mesh.C()[i][1];
+    
+        u[i] = 2*Q_s*(c_beta - (c_0 + epsilon * (
+                 cos(0.105 * x) * cos(0.11 * y) +
+                 pow(cos(0.13 * x) * cos(0.087 * y), 2) +
+                 cos(0.025 * x - 0.15 * y) * cos(0.07 * x - 0.02 * y)))) *
+               (c_alpha - (c_0 + epsilon * (
+                 cos(0.105 * x) * cos(0.11 * y) +
+                 pow(cos(0.13 * x) * cos(0.087 * y), 2) +
+                 cos(0.025 * x - 0.15 * y) * cos(0.07 * x - 0.02 * y)))) *
+               (2*(c_0 + epsilon * (
+                 cos(0.105 * x) * cos(0.11 * y) +
+                 pow(cos(0.13 * x) * cos(0.087 * y), 2) +
+                 cos(0.025 * x - 0.15 * y) * cos(0.07 * x - 0.02 * y))) - (c_alpha + c_beta)) +
+           kappa * epsilon * (-0.023125*cos(0.105*x)*cos(0.11*y) -
+                              0.338*cos(0.26*x)*cos(0.087*y)*cos(0.087*y) -
+                              0.015138*cos(0.13*x)*cos(0.174*y)*cos(0.13*x)*cos(0.174*y) -
+                              0.0229*cos(0.07*x - 0.02*y)*cos(0.025*x - 0.15*y) +
+                              0.0095*sin(0.07*x - 0.02*y)*sin(0.025*x - 0.15*y));
+        }
+        writeEntry(os, "", u);
+#};
+};
+
+
+boundaryField
+{
+    bottom
+    {
+        type            zeroGradient;
+    }
+    top
+    {
+        type            zeroGradient;
+    }
+    left
+    {
+        type            zeroGradient; 
+    }
+    right
+    {
+        type            zeroGradient; 
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+// ************************************************************************* //
