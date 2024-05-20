@@ -29,7 +29,7 @@ vertices
 
 blocks
 (
-    hex (0 1 2 3 4 5 6 7) (10 10 1) simpleGrading (1 1 1)
+    hex (0 1 2 3 4 5 6 7) (74 74 1) simpleGrading (1 1 1)
 );
 
 edges
@@ -40,7 +40,8 @@ boundary
 (
     bottom
     {
-        type wall;
+        type cyclic;
+        neighbourPatch top;
         faces
         (
             (0 1 5 4)
@@ -48,7 +49,8 @@ boundary
     }
     top
     {
-        type wall;
+        type cyclic;
+        neighbourPatch bottom;
         faces
         (
             (2 3 7 6)
@@ -56,7 +58,8 @@ boundary
     }
     left
     {
-        type wall;
+        type cyclic;
+        neighbourPatch right;
         faces
         (
             (0 3 7 4)
@@ -64,7 +67,8 @@ boundary
     }
     right
     {
-        type wall;
+        type cyclic;
+        neighbourPatch left;
         faces
         (
             (1 2 6 5)
