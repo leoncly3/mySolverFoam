@@ -76,19 +76,19 @@ boundaryField
 {
     bottom
     {
-        type            zeroGradient;
+        type            cyclic;
     }
     top
     {
-        type            zeroGradient;
+        type            cyclic;
     }
     left
     {
-        type            zeroGradient; 
+        type            cyclic; 
     }
     right
     {
-        type            zeroGradient; 
+        type            cyclic; 
     }
     frontAndBack
     {
