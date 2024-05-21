@@ -90,3 +90,22 @@ mergePatchPairs
 );
 
 // ************************************************************************* //
+//x_min -100;
+//x_max 100;
+//y_min -100;
+//y_max 100;
+
+//lx #calc "$x_max - $x_min";
+//ly #calc "$y_max - $y_min";
+
+//vertices
+//(
+//    ($x_min $y_min -0.01)
+//    ($x_max $y_min -0.01)
+//    ($x_max $y_max -0.01)
+//    ($x_min $y_max -0.01)
+//    ($x_min $y_min 0.01)
+//    ($x_max $y_min 0.01)
+//    ($x_max $y_max 0.01)
+//    ($x_min $y_max 0.01)
+//);
