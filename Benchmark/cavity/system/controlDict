@@ -28,7 +28,7 @@ deltaT          0.001;
 
 writeControl    timeStep;
 
-writeInterval   20000;
+writeInterval   2000;
 
 purgeWrite      0;//一般这个设置为0就行
 
