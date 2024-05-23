@@ -38,10 +38,18 @@ int main(int argc, char *argv[])
     simpleControl simple(mesh);
     #include "createFields.H"
 
+    #include "createTimeControls.H"//声明动态设定步长相关参数
+    #include "readTimeControls.H"//读入动态设定步长相关参数
+    #include "CourantNo.H"//计算courantNo
+    #include "setInitialDeltaT.H"// 初始化设定时间步长
+
     Info << "Starting time loop\n";
     while (simple.loop(runTime))
 
     {
+        #include "CourantNo.H"
+        #include "setDeltaT.H"
+        runTime++;   
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
         while (simple.correctNonOrthogonal())//非正交性修正，保证其稳定性
