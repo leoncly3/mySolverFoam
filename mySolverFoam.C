@@ -46,8 +46,14 @@ int main(int argc, char *argv[])
 
         while (simple.correctNonOrthogonal())//非正交性修正，保证其稳定性
         {
-			#include "cEqn.H"
-            #include "uEqn.H"
+		for(int i=0; i<2; i++)
+		{
+		#include "cEqn.H"
+		}
+		for(int i=0; i<2; i++)
+		{
+            	#include "uEqn.H"
+		}
         }
 
         #include "write.H"
