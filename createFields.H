@@ -80,5 +80,20 @@ volScalarField c
     mesh
 );
 
+Info << ""Reading field U\n" << endl;//设置U场并且设置为c的梯度
+volVectorField U
+(
+    IOobject
+    (
+        "U",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    fvc::grad(c)
+);
+
+#include "createPhi.H"
 
 
