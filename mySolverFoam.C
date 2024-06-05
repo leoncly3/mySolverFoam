@@ -28,50 +28,61 @@ Description
 
 \*---------------------------------------------------------------------------*/
 #include "fvCFD.H"
-#include "simpleControl.H"
+#include "pimpleControl.H"
+#include "adjustTimeStep.H"
 
 int main(int argc, char *argv[])
 {
     #include "setRootCase.H"
     #include "createTime.H"
     #include "createMesh.H"
-    simpleControl simple(mesh);
+
+    pimpleControl pimple(mesh);  // 初始化 PIMPLE 控制对象
+
     #include "createFields.H"
+/* scalar previousResidualc = 1.0;
+    scalar previousResidualu = 1.0;
+    scalar relaxationFactor = 0.5;
+*/
+    Info << "\nCalculating temperature distribution\n" << endl;
 
-    #include "createTimeControls.H"//声明动态设定步长相关参数
-    #include "readTimeControls.H"//读入动态设定步长相关参数
-    #include "CourantNo.H"//计算courantNo
-    #include "setInitialDeltaT.H"// 初始化设定时间步长
-
-    Info << "Starting time loop\n";
-    while (simple.loop(runTime))
-
+    while (pimple.loop(runTime))  // 时间步循环
     {
-        #include "CourantNo.H"
-        #include "setDeltaT.H"
-        runTime++;   
-        Info<< "Time = " << runTime.timeName() << nl << endl;
+        Info << "Time = " << runTime.timeName() << nl << endl;
 
-        while (simple.correctNonOrthogonal())//非正交性修正，保证其稳定性
+        // 外部迭代循环
+        while (pimple.loop())
         {
-		for(int i=0; i<2; i++)
-		{
-		#include "cEqn.H"
-		}
-		for(int i=0; i<2; i++)
-		{
-            	#include "uEqn.H"
-		}
+            
+            #include "cEqn.H"  // 求解浓度方程
+            // 内部校正循环
+            while (pimple.correct())
+            {
+            #include "uEqn.H"  // 求解温度方程
+            }
         }
 
-        #include "write.H"
+        runTime.write();  // 写入当前时间步的结果
 
-        Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
+        // 计算当前残差
+ /*      scalar currentResidualc = computeResidual(c);
+        scalar currentResidualu = computeResidual(u);
+
+        Info << "Residual for c: " << currentResidualc << ", Residual for u: " << currentResidualu << endl;
+
+       // 调整时间步长 
+        adjustTimeStep(runTime, previousResidualc, currentResidualc, previousResidualu, currentResidualu, relaxationFactor);
+
+        // 更新上一个时间步的残差
+        previousResidualc = currentResidualc;
+        previousResidualu = currentResidualu;
+*/
+        Info << "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
             << "  ClockTime = " << runTime.elapsedClockTime() << " s"
             << nl << endl;
     }
 
-    Info<< "End\n" << endl;
+    Info << "End\n" << endl;
 
     return 0;
 }
